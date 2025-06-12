@@ -1,0 +1,135 @@
+
+import React, { useState, useEffect } from 'react';
+import { Zap, Shield, Settings, Users, Loader } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
+
+interface Service {
+  id: number;
+  title: string;
+  description: string;
+  icon: React.ComponentType<any>;
+  image: string;
+}
+
+const Services = () => {
+  const { t } = useLanguage();
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate API call with mock data
+    const fetchServices = async () => {
+      setLoading(true);
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const mockServices: Service[] = [
+        {
+          id: 1,
+          title: t('laserEquipment'),
+          description: t('laserDescription'),
+          icon: Zap,
+          image: '/placeholder.svg',
+        },
+        {
+          id: 2,
+          title: t('dermatologyEquipment'),
+          description: t('dermatologyDescription'),
+          icon: Shield,
+          image: '/placeholder.svg',
+        },
+        {
+          id: 3,
+          title: t('installationServices'),
+          description: t('installationDescription'),
+          icon: Settings,
+          image: '/placeholder.svg',
+        },
+        {
+          id: 4,
+          title: t('maintenanceServices'),
+          description: t('maintenanceDescription'),
+          icon: Users,
+          image: '/placeholder.svg',
+        },
+      ];
+      
+      setServices(mockServices);
+      setLoading(false);
+    };
+
+    fetchServices();
+  }, [t]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading services...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 animate-fade-in">
+            {t('servicesTitle')}
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto animate-fade-in">
+            {t('servicesSubtitle')}
+          </p>
+        </div>
+
+        {/* Services Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {services.map((service, index) => (
+            <div
+              key={service.id}
+              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 animate-fade-in"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <div className="p-8">
+                <div className="flex items-center mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-green-500 rounded-xl flex items-center justify-center mr-4">
+                    <service.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900">{service.title}</h3>
+                </div>
+                <p className="text-gray-600 text-lg leading-relaxed mb-6">
+                  {service.description}
+                </p>
+                <div className="bg-gray-100 rounded-lg h-48 flex items-center justify-center">
+                  <span className="text-gray-500">Equipment Image Placeholder</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Additional Info */}
+        <div className="mt-16 bg-white rounded-xl shadow-lg p-8 text-center animate-fade-in">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            Professional Support
+          </h2>
+          <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto">
+            Our team of certified technicians provides comprehensive support for all equipment installations, 
+            training, and ongoing maintenance to ensure optimal performance.
+          </p>
+          <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-500">
+            <span>✓ Certified Technicians</span>
+            <span>✓ 24/7 Support</span>
+            <span>✓ Training Included</span>
+            <span>✓ Warranty Coverage</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Services;
