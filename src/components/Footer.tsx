@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin } from 'lucide-react';
+import { Mail, Phone, MapPin, Facebook, Linkedin } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const Footer = () => {
@@ -60,7 +61,7 @@ const Footer = () => {
                 href="#"
                 className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"
               >
-                <Twitter className="w-5 h-5" />
+                <X className="w-5 h-5" />
               </a>
               <a
                 href="#"
@@ -73,7 +74,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Sparkka Oy. {t('allRightsReserved')}</p>
+          <p>&copy; 2025 Sparkka Oy. {t('allRightsReserved')}</p>
         </div>
       </div>
     </footer>

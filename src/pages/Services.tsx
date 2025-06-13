@@ -8,55 +8,30 @@ interface Service {
   title: string;
   description: string;
   icon: React.ComponentType<any>;
-  imagePrompt: string;
-  generatedImage?: string;
+  searchTerm: string;
+  imageUrl?: string;
 }
 
 const Services = () => {
   const { t } = useLanguage();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const [imageGenerationKey, setImageGenerationKey] = useState('');
-  const [showKeyInput, setShowKeyInput] = useState(false);
 
-  const servicePrompts = {
-    laser: "A sleek, modern medical laser machine in a clean, high-tech aesthetic clinic, with a focus on advanced technology, blue and white color scheme, soft lighting, and a professional atmosphere. Include subtle details like a touchscreen interface and medical tools in the background.",
-    dermatology: "A professional dermatology device in a sterile clinic setting, featuring a high-quality skin treatment machine with a sleek design, green and white tones, surrounded by skincare products and a calm, medical environment with soft natural light.",
-    installation: "A team of expert technicians installing a medical laser device in a clinic, with tools and equipment neatly arranged, a bright and organized workspace, blue and gray color scheme, and a focus on precision and professionalism.",
-    maintenance: "A technician performing maintenance on a dermatology machine in a clean workshop, with diagnostic tools and spare parts visible, using a green and white color scheme, bright lighting, and a focus on detailed care and expertise."
-  };
-
-  const generateImage = async (prompt: string): Promise<string> => {
-    if (!imageGenerationKey) {
-      return '/placeholder.svg';
-    }
-
+  const fetchImageFromUnsplash = async (searchTerm: string): Promise<string> => {
     try {
-      const response = await fetch('https://api.openai.com/v1/images/generations', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${imageGenerationKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'dall-e-3',
-          prompt: prompt,
-          n: 1,
-          size: '1024x1024',
-          quality: 'standard',
-          style: 'natural'
-        }),
-      });
-
+      const response = await fetch(
+        `https://api.unsplash.com/search/photos?query=${encodeURIComponent(searchTerm)}&per_page=1&client_id=demo`
+      );
+      
       if (!response.ok) {
-        console.error('Image generation failed:', response.statusText);
+        console.warn(`Failed to fetch image for ${searchTerm}, using placeholder`);
         return '/placeholder.svg';
       }
 
       const data = await response.json();
-      return data.data[0]?.url || '/placeholder.svg';
+      return data.results[0]?.urls?.regular || '/placeholder.svg';
     } catch (error) {
-      console.error('Error generating image:', error);
+      console.error('Error fetching image:', error);
       return '/placeholder.svg';
     }
   };
@@ -71,36 +46,36 @@ const Services = () => {
           title: t('laserEquipment'),
           description: t('laserDescription'),
           icon: Zap,
-          imagePrompt: servicePrompts.laser,
+          searchTerm: 'medical laser equipment',
         },
         {
           id: 2,
           title: t('dermatologyEquipment'),
           description: t('dermatologyDescription'),
           icon: Shield,
-          imagePrompt: servicePrompts.dermatology,
+          searchTerm: 'dermatology device skincare',
         },
         {
           id: 3,
           title: t('installationServices'),
           description: t('installationDescription'),
           icon: Settings,
-          imagePrompt: servicePrompts.installation,
+          searchTerm: 'medical equipment installation',
         },
         {
           id: 4,
           title: t('maintenanceServices'),
           description: t('maintenanceDescription'),
           icon: Users,
-          imagePrompt: servicePrompts.maintenance,
+          searchTerm: 'equipment maintenance tools',
         },
       ];
 
-      // Generate images for each service
+      // Fetch images for each service
       const servicesWithImages = await Promise.all(
         mockServices.map(async (service) => ({
           ...service,
-          generatedImage: await generateImage(service.imagePrompt),
+          imageUrl: await fetchImageFromUnsplash(service.searchTerm),
         }))
       );
       
@@ -109,14 +84,7 @@ const Services = () => {
     };
 
     fetchServices();
-  }, [t, imageGenerationKey]);
-
-  const handleKeySubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setShowKeyInput(false);
-    // Trigger re-fetch of services with new key
-    window.location.reload();
-  };
+  }, [t]);
 
   if (loading) {
     return (
@@ -140,41 +108,6 @@ const Services = () => {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto animate-fade-in">
             {t('servicesSubtitle')}
           </p>
-          
-          {/* AI Image Generation Key Input */}
-          {!imageGenerationKey && (
-            <div className="mt-8">
-              {!showKeyInput ? (
-                <button
-                  onClick={() => setShowKeyInput(true)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Enable AI Image Generation
-                </button>
-              ) : (
-                <form onSubmit={handleKeySubmit} className="max-w-md mx-auto">
-                  <div className="flex gap-2">
-                    <input
-                      type="password"
-                      placeholder="Enter OpenAI API Key"
-                      value={imageGenerationKey}
-                      onChange={(e) => setImageGenerationKey(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <button
-                      type="submit"
-                      className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                      Generate
-                    </button>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Your API key is stored locally and used only for image generation
-                  </p>
-                </form>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Services Grid */}
@@ -196,14 +129,19 @@ const Services = () => {
                   {service.description}
                 </p>
                 <div className="bg-gray-100 rounded-lg h-48 flex items-center justify-center overflow-hidden">
-                  {service.generatedImage && service.generatedImage !== '/placeholder.svg' ? (
+                  {service.imageUrl && service.imageUrl !== '/placeholder.svg' ? (
                     <img 
-                      src={service.generatedImage} 
+                      src={service.imageUrl} 
                       alt={service.title}
                       className="w-full h-full object-cover rounded-lg"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        target.parentElement!.innerHTML = '<span class="text-gray-500">Equipment Image</span>';
+                      }}
                     />
                   ) : (
-                    <span className="text-gray-500">Equipment Image Placeholder</span>
+                    <span className="text-gray-500">Equipment Image</span>
                   )}
                 </div>
               </div>

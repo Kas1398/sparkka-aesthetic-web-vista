@@ -28,20 +28,28 @@ const SignIn = () => {
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
+        email: formData.email.trim(),
         password: formData.password,
       });
 
       if (error) {
-        setError(error.message);
-      } else {
-        setSuccess(t('signInSuccess'));
+        console.error('Sign in error:', error);
+        if (error.message === 'Invalid login credentials') {
+          setError(t('invalidCredentials') || 'Invalid email or password. Please check your credentials.');
+        } else if (error.message === 'Email not confirmed') {
+          setError(t('emailNotConfirmed') || 'Please check your email and click the confirmation link before signing in.');
+        } else {
+          setError(error.message);
+        }
+      } else if (data.user) {
+        setSuccess(t('signInSuccess') || 'Sign in successful! Redirecting...');
         setTimeout(() => {
           navigate('/');
-        }, 2000);
+        }, 1500);
       }
     } catch (err) {
-      setError(t('unexpectedError'));
+      console.error('Unexpected error:', err);
+      setError(t('unexpectedError') || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
