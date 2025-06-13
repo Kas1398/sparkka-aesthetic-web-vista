@@ -49,7 +49,7 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Language Toggle and Sign Up */}
+          {/* Language Toggle and Auth Links */}
           <div className="hidden md:flex items-center space-x-4">
             <button
               onClick={() => setLanguage(language === 'en' ? 'fi' : 'en')}
@@ -58,6 +58,12 @@ const Header = () => {
               <Globe className="w-4 h-4" />
               <span>{language.toUpperCase()}</span>
             </button>
+            <Link
+              to="/signin"
+              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              {t('signIn')}
+            </Link>
             <Link
               to="/signup"
               className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
@@ -103,13 +109,22 @@ const Header = () => {
                   <Globe className="w-4 h-4" />
                   <span>{language.toUpperCase()}</span>
                 </button>
-                <Link
-                  to="/signup"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition-colors"
-                >
-                  {t('signUp')}
-                </Link>
+                <div className="flex space-x-2">
+                  <Link
+                    to="/signin"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium transition-colors"
+                  >
+                    {t('signIn')}
+                  </Link>
+                  <Link
+                    to="/signup"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-md text-base font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    {t('signUp')}
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

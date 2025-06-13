@@ -13,6 +13,7 @@ import Pricing from './pages/Pricing';
 import Map from './pages/Map';
 import Contact from './pages/Contact';
 import SignUp from './pages/SignUp';
+import SignIn from './pages/SignIn';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/map" element={<Map />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/signin" element={<SignIn />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>

@@ -20,6 +20,7 @@ const translations = {
     map: 'Map',
     contact: 'Contact',
     signUp: 'Sign Up',
+    signIn: 'Sign In',
     
     // Homepage
     heroTitle: 'Advanced Medical Technology for Beauty and Aesthetics',
@@ -67,6 +68,13 @@ const translations = {
     confirmPassword: 'Confirm Password',
     createAccount: 'Create Account',
     
+    // Sign In
+    signInTitle: 'Sign In',
+    signInSubtitle: 'Welcome back! Please sign in to your account',
+    signingIn: 'Signing in...',
+    signInSuccess: 'Sign in successful! Redirecting...',
+    dontHaveAccount: "Don't have an account?",
+    
     // Map
     mapTitle: 'Our Location',
     mapSubtitle: 'Visit us at our headquarters in Vantaa, Finland',
@@ -90,7 +98,6 @@ const translations = {
     emailVerificationSent: 'Please check your email for verification instructions.',
     goToHomepage: 'Go to Homepage',
     alreadyHaveAccount: 'Already have an account?',
-    signIn: 'Sign in',
     namePlaceholder: 'Your full name',
     emailPlaceholder: 'your.email@example.com',
     phonePlaceholder: '+358 40 123 4567',
@@ -105,6 +112,7 @@ const translations = {
     map: 'Kartta',
     contact: 'Yhteystiedot',
     signUp: 'Rekisteröidy',
+    signIn: 'Kirjaudu sisään',
     
     // Homepage
     heroTitle: 'Edistynyt lääketieteellinen teknologia kauneuteen ja estetiikkaan',
@@ -152,6 +160,13 @@ const translations = {
     confirmPassword: 'Vahvista salasana',
     createAccount: 'Luo tili',
     
+    // Sign In
+    signInTitle: 'Kirjaudu sisään',
+    signInSubtitle: 'Tervetuloa takaisin! Kirjaudu tilillesi',
+    signingIn: 'Kirjaudutaan sisään...',
+    signInSuccess: 'Kirjautuminen onnistui! Uudelleenohjataan...',
+    dontHaveAccount: 'Eikö sinulla ole tiliä?',
+    
     // Map
     mapTitle: 'Sijaintimme',
     mapSubtitle: 'Vieraile päätoimistossamme Vantaalla, Suomessa',
@@ -175,7 +190,6 @@ const translations = {
     emailVerificationSent: 'Tarkista sähköpostisi vahvistusohjeiden saamiseksi.',
     goToHomepage: 'Siirry etusivulle',
     alreadyHaveAccount: 'Onko sinulla jo tili?',
-    signIn: 'Kirjaudu sisään',
     namePlaceholder: 'Koko nimesi',
     emailPlaceholder: 'sinun.sahkoposti@esimerkki.com',
     phonePlaceholder: '+358 40 123 4567',
