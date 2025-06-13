@@ -19,20 +19,46 @@ const Services = () => {
 
   const fetchImageFromUnsplash = async (searchTerm: string): Promise<string> => {
     try {
+      // Using a more reliable approach with direct image URLs for medical equipment
+      const imageMap: { [key: string]: string } = {
+        'medical laser equipment': 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=600&fit=crop',
+        'dermatology device skincare': 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=800&h=600&fit=crop',
+        'medical equipment installation': 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=600&fit=crop',
+        'equipment maintenance tools': 'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=600&fit=crop'
+      };
+
+      // Return direct image URL if available, otherwise try API
+      if (imageMap[searchTerm]) {
+        return imageMap[searchTerm];
+      }
+
+      // Fallback to API call with better error handling
       const response = await fetch(
-        `https://api.unsplash.com/search/photos?query=${encodeURIComponent(searchTerm)}&per_page=1&client_id=demo`
+        `https://api.unsplash.com/search/photos?query=${encodeURIComponent(searchTerm)}&per_page=1&orientation=landscape`,
+        {
+          headers: {
+            'Authorization': 'Client-ID YOUR_UNSPLASH_ACCESS_KEY' // Replace with actual key
+          }
+        }
       );
       
       if (!response.ok) {
-        console.warn(`Failed to fetch image for ${searchTerm}, using placeholder`);
-        return '/placeholder.svg';
+        console.warn(`Failed to fetch image for ${searchTerm}, using fallback`);
+        return imageMap[searchTerm] || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=600&fit=crop';
       }
 
       const data = await response.json();
-      return data.results[0]?.urls?.regular || '/placeholder.svg';
+      return data.results[0]?.urls?.regular || imageMap[searchTerm] || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=600&fit=crop';
     } catch (error) {
       console.error('Error fetching image:', error);
-      return '/placeholder.svg';
+      // Return appropriate fallback image based on search term
+      const fallbackImages: { [key: string]: string } = {
+        'medical laser equipment': 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=600&fit=crop',
+        'dermatology device skincare': 'https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=800&h=600&fit=crop',
+        'medical equipment installation': 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=600&fit=crop',
+        'equipment maintenance tools': 'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=800&h=600&fit=crop'
+      };
+      return fallbackImages[searchTerm] || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=600&fit=crop';
     }
   };
 
@@ -128,21 +154,16 @@ const Services = () => {
                 <p className="text-gray-600 text-lg leading-relaxed mb-6">
                   {service.description}
                 </p>
-                <div className="bg-gray-100 rounded-lg h-48 flex items-center justify-center overflow-hidden">
-                  {service.imageUrl && service.imageUrl !== '/placeholder.svg' ? (
-                    <img 
-                      src={service.imageUrl} 
-                      alt={service.title}
-                      className="w-full h-full object-cover rounded-lg"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        target.parentElement!.innerHTML = '<span class="text-gray-500">Equipment Image</span>';
-                      }}
-                    />
-                  ) : (
-                    <span className="text-gray-500">Equipment Image</span>
-                  )}
+                <div className="bg-gray-100 rounded-lg h-48 overflow-hidden">
+                  <img 
+                    src={service.imageUrl} 
+                    alt={service.title}
+                    className="w-full h-full object-cover rounded-lg transition-transform duration-300 hover:scale-105"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=600&fit=crop';
+                    }}
+                  />
                 </div>
               </div>
             </div>
