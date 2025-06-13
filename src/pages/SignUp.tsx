@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff, CheckCircle, User } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { supabase } from '../lib/supabase';
+import { toast } from 'sonner';
 
 const SignUp = () => {
   const { t } = useLanguage();
@@ -43,7 +45,7 @@ const SignUp = () => {
     }
 
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = t('passwordsDoNotMatch');
     }
 
     setErrors(newErrors);
@@ -57,13 +59,32 @@ const SignUp = () => {
 
     setIsSubmitting(true);
     
-    // Simulate API call - In a real app, this would be Supabase authentication
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    console.log('User signup:', formData);
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+            phone: formData.phone,
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Signup error:', error);
+        toast.error(error.message || t('signupError'));
+      } else {
+        console.log('Signup successful:', data);
+        toast.success(t('signupSuccess'));
+        setIsSubmitted(true);
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      toast.error(t('unexpectedError'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,12 +108,12 @@ const SignUp = () => {
         <div className="bg-white rounded-xl shadow-lg p-8 text-center max-w-md mx-4">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('success')}</h2>
-          <p className="text-gray-600 mb-6">{t('accountCreated')}</p>
+          <p className="text-gray-600 mb-6">{t('emailVerificationSent')}</p>
           <Link
             to="/"
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-block"
           >
-            Go to Homepage
+            {t('goToHomepage')}
           </Link>
         </div>
       </div>
@@ -127,7 +148,7 @@ const SignUp = () => {
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.name ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="Your full name"
+                placeholder={t('namePlaceholder')}
               />
               {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
             </div>
@@ -145,7 +166,7 @@ const SignUp = () => {
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.email ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="your.email@example.com"
+                placeholder={t('emailPlaceholder')}
               />
               {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
             </div>
@@ -163,7 +184,7 @@ const SignUp = () => {
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.phone ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="+358 40 123 4567"
+                placeholder={t('phonePlaceholder')}
               />
               {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
             </div>
@@ -182,7 +203,7 @@ const SignUp = () => {
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-12 ${
                     errors.password ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="Minimum 8 characters"
+                  placeholder={t('passwordPlaceholder')}
                 />
                 <button
                   type="button"
@@ -209,7 +230,7 @@ const SignUp = () => {
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-12 ${
                     errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="Confirm your password"
+                  placeholder={t('confirmPasswordPlaceholder')}
                 />
                 <button
                   type="button"
@@ -237,9 +258,9 @@ const SignUp = () => {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{' '}
+              {t('alreadyHaveAccount')}{' '}
               <Link to="/signin" className="text-blue-600 hover:text-blue-500 font-medium">
-                Sign in
+                {t('signIn')}
               </Link>
             </p>
           </div>
